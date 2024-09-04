@@ -52,10 +52,13 @@ h1 {
 }
 
 input[type="checkbox"] {
-    width: 24px; /* Ajusta el ancho del checkbox */
-    height: 24px; /* Ajusta la altura del checkbox */
+    width: 24px;
+    /* Ajusta el ancho del checkbox */
+    height: 24px;
+    /* Ajusta la altura del checkbox */
     margin-right: 10px;
-    vertical-align: middle; /* Alinea verticalmente el checkbox con el texto */
+    vertical-align: middle;
+    /* Alinea verticalmente el checkbox con el texto */
 }
 
 .menu-opcion-2 {

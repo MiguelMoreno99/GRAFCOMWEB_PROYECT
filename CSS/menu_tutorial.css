@@ -26,8 +26,8 @@ h1 {
     text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.7);
 }
 
-td  {
-    font-family: 'Roboto', sans-serif; 
+td {
+    font-family: 'Roboto', sans-serif;
     text-align: justify;
 }
 
@@ -40,7 +40,7 @@ td  {
 
 /* Estilos de los elementos del menú */
 .menu-opcion {
-    margin-inline-start:35%;
+    margin-inline-start: 35%;
     margin-inline-end: 35%;
     font-size: 1.5em;
     text-decoration: none;

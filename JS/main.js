@@ -49,12 +49,12 @@ function init() {
     });
 
     // Crear un plano como "suelo"
-    const floorGeometry = new THREE.PlaneGeometry(500, 500);
-    const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
-    const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    floor.rotation.x = -Math.PI / 2;  // Girar para que sea horizontal
-    floor.position.y = 0;  // Colocarlo en la altura 0 (suelo)
-    scene.add(floor);
+    // const floorGeometry = new THREE.PlaneGeometry(500, 500);
+    // const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+    // const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+    // floor.rotation.x = -Math.PI / 2;  // Girar para que sea horizontal
+    // floor.position.y = 0;  // Colocarlo en la altura 0 (suelo)
+    // scene.add(floor);
 
     // Añadir luces
     const ambientLight = new THREE.AmbientLight(0xffffff, 1);
@@ -70,83 +70,9 @@ function init() {
     // const spotlighthelper = new THREE.SpotLightHelper(spotlight,10);  // El número define la longitud de los ejes
     // spotlight.add(spotlighthelper);  // Añadir el helper al cubo (o modelo)
 
-    // Añadir modelos
-    const garage1 = null;
-    loadGLTFmodel(garage1, '../models/garage4/scene.gltf', 0, -3, 0, 1, 1, 1, 0, 0, 0, false);
-
-    const cealingG1_1 = null;
-    loadGLTFmodel(cealingG1_1, '../models/fake_drop_ceiling/scene.gltf', 39, 31, -24, 20, 1, 20, 0, 0, 0, false);
-
-    const cealingG1_2 = null;
-    loadGLTFmodel(cealingG1_2, '../models/fake_drop_ceiling/scene.gltf', -1, 31, -24, 20, 1, 20, 0, 0, 0, false);
-
-    const cealingG1_3 = null;
-    loadGLTFmodel(cealingG1_3, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, -24, 20.5, 1, 20, 0, 0, 0, false);
-
-    const cealingG1_4 = null;
-    loadGLTFmodel(cealingG1_4, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, 14.5, 20.5, 1, 18.5, 0, 0, 0, false);
-
-    const cealingG1_5 = null;
-    loadGLTFmodel(cealingG1_5, '../models/fake_drop_ceiling/scene.gltf', -1, 31, 14.5, 20, 1, 18.5, 0, 0, 0, false);
-
-    const cealingG1_6 = null;
-    loadGLTFmodel(cealingG1_6, '../models/fake_drop_ceiling/scene.gltf', 39, 31, 14.5, 20, 1, 18.5, 0, 0, 0, false);
-
-    const garage2 = null;
-    loadGLTFmodel(garage2, '../models/garage4/scene.gltf', -3, -3, 65.85, 1, 1, 1, 0, Math.PI, 0, false);
-
-    let val = 77;
-
-    const cealingG2_1 = null;
-    loadGLTFmodel(cealingG2_1, '../models/fake_drop_ceiling/scene.gltf', 39, 31, -24 + val, 20, 1, 20, 0, 0, 0, false);
-
-    const cealingG2_2 = null;
-    loadGLTFmodel(cealingG2_2, '../models/fake_drop_ceiling/scene.gltf', -1, 31, -24 + val, 20, 1, 20, 0, 0, 0, false);
-
-    const cealingG2_3 = null;
-    loadGLTFmodel(cealingG2_3, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, -24 + val, 20.5, 1, 20, 0, 0, 0, false);
-
-    const cealingG2_4 = null;
-    loadGLTFmodel(cealingG2_4, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, 14.5 + val, 20.5, 1, 18.5, 0, 0, 0, false);
-
-    const cealingG2_5 = null;
-    loadGLTFmodel(cealingG2_5, '../models/fake_drop_ceiling/scene.gltf', -1, 31, 14.5 + val, 20, 1, 18.5, 0, 0, 0, false);
-
-    const cealingG2_6 = null;
-    loadGLTFmodel(cealingG2_6, '../models/fake_drop_ceiling/scene.gltf', 39, 31, 14.5 + val, 20, 1, 18.5, 0, 0, 0, false);
-
-    const weelG1w1p = null;
-    loadGLTFmodel(weelG1w1p, '../models/props/weel.glb', -17.8, 4.5, -.5, 8.5, 8.5, 8.5, 0,(Math.PI/2)*-1, 0, false);
-
-    const weelG1w1 = null;
-    loadGLTFmodel(weelG1w1, '../models/props/weel.glb', 43, 3.2, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
-
-    const weelG1w2 = null;
-    loadGLTFmodel(weelG1w2, '../models/props/weel.glb', 43, 3.2, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
-
-    const weelG1w3 = null;
-    loadGLTFmodel(weelG1w3, '../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
-
-    const weelG1w4 = null;
-    loadGLTFmodel(weelG1w4, '../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
-
-    const weel_wrench1 = null;
-    loadGLTFmodel(weel_wrench1, '../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
-
-    const extinguisher1 = null;
-    loadGLTFmodel(extinguisher1, '../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
-
-    const gasoline1 = null;
-    loadGLTFmodel(gasoline1, '../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
-
-    const engine1 = null;
-    loadGLTFmodel(engine1, '../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
-
-    const impact_wrench1 = null;
-    loadGLTFmodel(impact_wrench1, '../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
-
-    const paper_tablet1 = null;
-    loadGLTFmodel(paper_tablet1, '../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI/2*-1, 0, 0, false);
+    loadLvL1Models();
+    //loadLvL2Models();
+    //loadLvL3Models();
 
     // Evento de teclas para movimiento
     document.addEventListener('keydown', onKeyDown);
@@ -271,4 +197,186 @@ function loadOBJyMTLmodel(objname, pathfolder, nameAmtl, nameAobj, posx, posy, p
             }
         });
     });
+}
+
+function loadLvL1Models() {
+
+    //Añadir modelos
+    const garage1 = null;
+    loadGLTFmodel(garage1, '../models/garage4/scene.gltf', 0, -3, 0, 1, 1, 1, 0, 0, 0, false);
+
+    const cealingG1_1 = null;
+    loadGLTFmodel(cealingG1_1, '../models/fake_drop_ceiling/scene.gltf', 39, 31, -24, 20, 1, 20, 0, 0, 0, false);
+
+    const cealingG1_2 = null;
+    loadGLTFmodel(cealingG1_2, '../models/fake_drop_ceiling/scene.gltf', -1, 31, -24, 20, 1, 20, 0, 0, 0, false);
+
+    const cealingG1_3 = null;
+    loadGLTFmodel(cealingG1_3, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, -24, 20.5, 1, 20, 0, 0, 0, false);
+
+    const cealingG1_4 = null;
+    loadGLTFmodel(cealingG1_4, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, 14.5, 20.5, 1, 18.5, 0, 0, 0, false);
+
+    const cealingG1_5 = null;
+    loadGLTFmodel(cealingG1_5, '../models/fake_drop_ceiling/scene.gltf', -1, 31, 14.5, 20, 1, 18.5, 0, 0, 0, false);
+
+    const cealingG1_6 = null;
+    loadGLTFmodel(cealingG1_6, '../models/fake_drop_ceiling/scene.gltf', 39, 31, 14.5, 20, 1, 18.5, 0, 0, 0, false);
+
+    const garage2 = null;
+    loadGLTFmodel(garage2, '../models/garage4/scene.gltf', -3, -3, 65.85, 1, 1, 1, 0, Math.PI, 0, false);
+
+    let val = 77;
+
+    const cealingG2_1 = null;
+    loadGLTFmodel(cealingG2_1, '../models/fake_drop_ceiling/scene.gltf', 39, 31, -24 + val, 20, 1, 20, 0, 0, 0, false);
+
+    const cealingG2_2 = null;
+    loadGLTFmodel(cealingG2_2, '../models/fake_drop_ceiling/scene.gltf', -1, 31, -24 + val, 20, 1, 20, 0, 0, 0, false);
+
+    const cealingG2_3 = null;
+    loadGLTFmodel(cealingG2_3, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, -24 + val, 20.5, 1, 20, 0, 0, 0, false);
+
+    const cealingG2_4 = null;
+    loadGLTFmodel(cealingG2_4, '../models/fake_drop_ceiling/scene.gltf', -41.5, 31, 14.5 + val, 20.5, 1, 18.5, 0, 0, 0, false);
+
+    const cealingG2_5 = null;
+    loadGLTFmodel(cealingG2_5, '../models/fake_drop_ceiling/scene.gltf', -1, 31, 14.5 + val, 20, 1, 18.5, 0, 0, 0, false);
+
+    const cealingG2_6 = null;
+    loadGLTFmodel(cealingG2_6, '../models/fake_drop_ceiling/scene.gltf', 39, 31, 14.5 + val, 20, 1, 18.5, 0, 0, 0, false);
+
+    const weelG1w1p = null;
+    loadGLTFmodel(weelG1w1p, '../models/props/weel.glb', -17.8, 4.5, -.5, 8.5, 8.5, 8.5, 0, (Math.PI / 2) * -1, 0, false);
+
+    const weelG1w1 = null;
+    loadGLTFmodel(weelG1w1, '../models/props/weel.glb', 43, 3.2, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w2 = null;
+    loadGLTFmodel(weelG1w2, '../models/props/weel.glb', 43, 3.2, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w3 = null;
+    loadGLTFmodel(weelG1w3, '../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w4 = null;
+    loadGLTFmodel(weelG1w4, '../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weel_wrench1 = null;
+    loadGLTFmodel(weel_wrench1, '../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+
+    const extinguisher1 = null;
+    loadGLTFmodel(extinguisher1, '../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+
+    const gasoline1 = null;
+    loadGLTFmodel(gasoline1, '../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+
+    const engine1 = null;
+    loadGLTFmodel(engine1, '../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
+
+    const impact_wrench1 = null;
+    loadGLTFmodel(impact_wrench1, '../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+
+    const paper_tablet1 = null;
+    loadGLTFmodel(paper_tablet1, '../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
+}
+
+function loadLvL2Models() {
+
+    const garage3 = null;
+    loadGLTFmodel(garage3, '../models/garage5/scene.gltf', 0, 0, 0, 10, 10, 10, 0, 0, 0, false);
+
+    const garage3_2 = null;
+    loadGLTFmodel(garage3_2, '../models/garage5/scene.gltf', -1, 0, 147.8, 10, 10, 10, 0, Math.PI, 0, false);
+
+    const wall1 = null;
+    loadGLTFmodel(wall1, '../models/props/wall.glb', -60, -1, 80, 30, 30, 30, 0, Math.PI / 2, 0, false);
+
+    const wall2 = null;
+    loadGLTFmodel(wall2, '../models/props/wall.glb', 60, -1, 70, 30, 30, 30, 0, Math.PI / 2 * -1, 0, false);
+
+    const wall3 = null;
+    loadGLTFmodel(wall3, '../models/props/wall.glb', 0, -1, -37, 20, 30, 30, 0, 0, 0, false);
+
+    const wall4 = null;
+    loadGLTFmodel(wall4, '../models/props/wall.glb', 0, -1, 197, 20, 30, 30, 0, 0, 0, false);
+
+    const weelG1w1 = null;
+    loadGLTFmodel(weelG1w1, '../models/props/weel.glb', 43, 3.2, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w2 = null;
+    loadGLTFmodel(weelG1w2, '../models/props/weel.glb', 43, 3.2, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w3 = null;
+    loadGLTFmodel(weelG1w3, '../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w4 = null;
+    loadGLTFmodel(weelG1w4, '../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weel_wrench1 = null;
+    loadGLTFmodel(weel_wrench1, '../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+
+    const extinguisher1 = null;
+    loadGLTFmodel(extinguisher1, '../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+
+    const gasoline1 = null;
+    loadGLTFmodel(gasoline1, '../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+
+    const engine1 = null;
+    loadGLTFmodel(engine1, '../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
+
+    const impact_wrench1 = null;
+    loadGLTFmodel(impact_wrench1, '../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+
+    const paper_tablet1 = null;
+    loadGLTFmodel(paper_tablet1, '../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
+
+    const car1 = null;
+    loadGLTFmodel(car1, '../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
+
+    const car2 = null;
+    loadGLTFmodel(car2, '../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
+
+}
+
+function loadLvL3Models() {
+
+    const garage2 = null;
+    loadGLTFmodel(garage2, '../models/underground_parking/scene.gltf', 0, .1, 0, 12, 12, 12, 0, 0, 0, false);
+
+    const weelG1w1 = null;
+    loadGLTFmodel(weelG1w1, '../models/props/weel.glb', 43, 3.2, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w2 = null;
+    loadGLTFmodel(weelG1w2, '../models/props/weel.glb', 43, 3.2, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w3 = null;
+    loadGLTFmodel(weelG1w3, '../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weelG1w4 = null;
+    loadGLTFmodel(weelG1w4, '../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
+
+    const weel_wrench1 = null;
+    loadGLTFmodel(weel_wrench1, '../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+
+    const extinguisher1 = null;
+    loadGLTFmodel(extinguisher1, '../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+
+    const gasoline1 = null;
+    loadGLTFmodel(gasoline1, '../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+
+    const engine1 = null;
+    loadGLTFmodel(engine1, '../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
+
+    const impact_wrench1 = null;
+    loadGLTFmodel(impact_wrench1, '../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+
+    const paper_tablet1 = null;
+    loadGLTFmodel(paper_tablet1, '../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
+
+    const car1 = null;
+    loadGLTFmodel(car1, '../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
+
+    const car2 = null;
+    loadGLTFmodel(car2, '../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
+
 }

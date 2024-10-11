@@ -1,0 +1,43 @@
+{
+  "hash": "04cbaf75",
+  "configHash": "effd20b3",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "91899ef2",
+  "optimized": {
+    "three": {
+      "src": "../../node_modules/three/build/three.module.js",
+      "file": "three.js",
+      "fileHash": "5e49c456",
+      "needsInterop": false
+    },
+    "three/addons/controls/PointerLockControls.js": {
+      "src": "../../node_modules/three/examples/jsm/controls/PointerLockControls.js",
+      "file": "three_addons_controls_PointerLockControls__js.js",
+      "fileHash": "a35599c2",
+      "needsInterop": false
+    },
+    "three/addons/loaders/GLTFLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/GLTFLoader.js",
+      "file": "three_addons_loaders_GLTFLoader__js.js",
+      "fileHash": "365a734d",
+      "needsInterop": false
+    },
+    "three/examples/jsm/loaders/MTLLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/MTLLoader.js",
+      "file": "three_examples_jsm_loaders_MTLLoader__js.js",
+      "fileHash": "c7f9b07d",
+      "needsInterop": false
+    },
+    "three/examples/jsm/loaders/OBJLoader.js": {
+      "src": "../../node_modules/three/examples/jsm/loaders/OBJLoader.js",
+      "file": "three_examples_jsm_loaders_OBJLoader__js.js",
+      "fileHash": "fbadde53",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-ISCQGZSO": {
+      "file": "chunk-ISCQGZSO.js"
+    }
+  }
+}

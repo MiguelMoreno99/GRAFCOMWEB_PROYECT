@@ -3,9 +3,6 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Orbitron', sans-serif;
-    background: url('../IMG/LOGO CAR FIXING SIMULATOR.jpg') no-repeat center center fixed;
-    background-size: contain;
-    background-color: #202020;
 }
 
 /* Contenedor principal del menú */
@@ -14,9 +11,22 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
-    color: #fff;
-    text-align: center;
+
+    /* Tamaño ajustado */
+    width: 50%; /* Ajusta el ancho según sea necesario */
+    max-width: 600px; /* Limita el tamaño máximo */
+    height: auto; /* Permite que el contenedor se ajuste a su contenido */
+    padding: 2em; /* Añade espacio interno para que no esté tan ajustado */
+    background-color: rgba(83, 83, 83, 0.877); /* Fondo semitransparente */
+    border-radius: 15px; /* Bordes redondeados */
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.5); /* Sombra para darle profundidad */
+
+    /* Centrando en la pantalla */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* Por encima del canvas */
 }
 
 /* Estilos del título del menú */
@@ -24,6 +34,13 @@ h1 {
     font-size: 4em;
     margin-bottom: 1em;
     text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.7);
+    text-align: center;
+}
+
+h2 {
+    font-size: 2em;
+    margin-bottom: 2em;
+    text-align: center;
 }
 
 /* Contenedor de los elementos del menú */
@@ -49,4 +66,19 @@ h1 {
 .menu-opcion:hover {
     background-color: rgba(0, 0, 0, 0.9);
     transform: scale(1.2);
+}
+
+input[type="checkbox"] {
+    width: 24px;
+    /* Ajusta el ancho del checkbox */
+    height: 24px;
+    /* Ajusta la altura del checkbox */
+    margin-right: 10px;
+    vertical-align: middle;
+    /* Alinea verticalmente el checkbox con el texto */
+}
+
+#pausa,
+#opciones {
+    display: none; /* Oculta los contenedores inicialmente */
 }

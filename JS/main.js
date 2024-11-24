@@ -3,6 +3,111 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
+import {
+    getAuth,
+    signInWithPopup,
+    GoogleAuthProvider,
+    signOut,
+} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+import {
+    getDatabase,
+    ref,
+    onValue,
+    set,
+} from "https://www.gstatic.com/firebasejs/10.4.0/firebase-database.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBkWltPwV8BQJ5hgV8laGcir6yXC-J-PhM",
+    authDomain: "coordenadas2-2deae.firebaseapp.com",
+    databaseURL: "https://coordenadas2-2deae-default-rtdb.firebaseio.com",
+    projectId: "coordenadas2-2deae",
+    storageBucket: "coordenadas2-2deae.firebasestorage.app",
+    messagingSenderId: "57386903690",
+    appId: "1:57386903690:web:2ffb323eeb5e86e7e12573"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const provider = new GoogleAuthProvider();
+const auth = getAuth();
+const db = getDatabase();
+
+const buttonLogin = document.getElementById("button-login");
+const buttonLogout = document.getElementById("button-logout");
+
+let currentUser;
+async function login() {
+    await signInWithPopup(auth, provider)
+        .then((result) => {
+            // This gives you a Google Access Token. You can use it to access the Google API.
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            // The signed-in user info.
+            currentUser = result.user;
+            writeUserData(currentUser.uid, 0, 0);
+        })
+        .catch((error) => {
+            // Handle Errors here.
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            // The email of the user's account used.
+            const email = error.customData.email;
+            // The AuthCredential type that was used.
+            const credential = GoogleAuthProvider.credentialFromError(error);
+            // ...
+        });
+}
+
+buttonLogin.addEventListener("click", async () => {
+    await login();
+});
+
+buttonLogout.addEventListener("click", async () => {
+    await signOut(auth)
+        .then(() => {
+            // Sign-out successful.
+            console.log("Sign-out successful");
+        })
+        .catch((error) => {
+            // An error happened.
+            console.log("An error happened", error);
+        });
+});
+// Leer
+const starCountRef = ref(db, "jugadores");
+onValue(starCountRef, (snapshot) => {
+    const data = snapshot.val();
+    Object.entries(data).forEach(([key, value]) => {
+        console.log(`${key} ${value.x} ${value.z}`);
+
+        const jugador = scene.getObjectByName(key);
+
+        if (!jugador) {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const material = new THREE.MeshPhongMaterial();
+            const mesh = new THREE.Mesh(geometry, material);
+            mesh.castShadow = true;
+            mesh.position.set(value.x, 10, value.z);
+            mesh.material.color = new THREE.Color(Math.random() * 0xffffff);
+            mesh.name = key;
+            scene.add(mesh);
+        }
+
+        scene.getObjectByName(key).position.x = value.x;
+        scene.getObjectByName(key).position.z = value.z;
+    });
+});
+
+//Leer
+function writeUserData(userId, positionX, positionZ) {
+    set(ref(db, "jugadores/" + userId), {
+        x: positionX,
+        z: positionZ,
+    });
+}
+let jugadorActual = null;
 
 // Obtener el escenario de la URL
 const params = new URLSearchParams(window.location.search);
@@ -17,14 +122,14 @@ const clock = new THREE.Clock();
 // Cajas de colisión
 const objetosConColision = []; // Array para almacenar los objetos que tienen colisión
 const jugadorBox = new THREE.Box3(); // Caja de colisión del jugador
-
+const jugadorHelper = new THREE.Box3Helper(jugadorBox, 0xff0000); // Rojo
 
 let scene, camera, renderer, controls;
 let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
 let velocity = new THREE.Vector3();
 let direction = new THREE.Vector3();
-let mouseLocked = false
-let gamePaused = false
+let mouseLocked = false;
+let gamePaused = false;
 // Variables para el control de audio
 let isMusicaActiva = true;
 let isSonidosActivos = true;
@@ -42,7 +147,7 @@ const audioObject = new THREE.Object3D();
 // Añadir luces
 const ambientLight = new THREE.AmbientLight(0xffffff, 1);
 //MostrarClisiones
-const showColitions = true
+const showColitions = true;
 
 init();
 animate();
@@ -79,6 +184,8 @@ function init() {
     const carro1 = loadBoxColition(38, 35, 15, -31, 15, -7, showColitions);
     const carro2 = loadBoxColition(38, 35, 15, 29, 15, 74, showColitions);
 
+    scene.add(jugadorHelper);
+
 }
 
 function onWindowResize() {
@@ -89,6 +196,9 @@ function onWindowResize() {
 
 function onKeyDown(event) {
     if (mouseLocked) {
+
+        jugadorActual = scene.getObjectByName(currentUser.uid);
+
         switch (event.code) {
             case 'KeyW':
                 moveForward = true;
@@ -129,6 +239,13 @@ function onKeyDown(event) {
                 }
                 break;
         }
+
+        writeUserData(
+            currentUser.uid,
+            jugadorActual.position.x,
+            jugadorActual.position.z
+        );
+
     } else {
         switch (event.code) {
             case 'Enter':
@@ -181,14 +298,15 @@ function animate() {
     direction.x = Number(moveRight) - Number(moveLeft);        // Derecha/Izquierda
     direction.normalize();  // Normalizar la dirección para que no sea más rápido en diagonal
 
-    if (moveForward || moveBackward) velocity.z += direction.z * speed * delta;
-    if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
+    if (moveForward || moveBackward) {
+        velocity.z += direction.z * speed * delta;
+    }
+    if (moveLeft || moveRight) {
+        velocity.x -= direction.x * speed * delta;
+    }
 
     // Guardar la posición actual del jugador
     const prevPosition = controls.object.position.clone();
-
-    // controls.object.position.addScaledVector(controls.object.getWorldDirection(new THREE.Vector3()).setY(0), velocity.z * delta);
-    // controls.object.position.addScaledVector(new THREE.Vector3().crossVectors(camera.up, controls.object.getWorldDirection(new THREE.Vector3())).normalize(), velocity.x * delta);
 
     // Mover el jugador
     controls.object.position.addScaledVector(
@@ -201,6 +319,13 @@ function animate() {
             .normalize(),
         velocity.x * delta
     );
+
+    // Comprobar si la posición ha cambiado
+    if (!prevPosition.equals(controls.object.position)) {
+        console.log("La posición de la cámara ha cambiado:", controls.object.position);
+        jugadorActual.position.x = controls.object.position.x;
+        jugadorActual.position.z = controls.object.position.z;
+    }
 
     // Actualizar la caja del jugador
     jugadorBox.setFromCenterAndSize(

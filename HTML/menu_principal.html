@@ -13,16 +13,96 @@
 </head>
 
 <body>
-    <div class="menu-contenedor">
+    <div class="menu-contenedor" id="menu">
         <h1>Car Fixing Simulator!</h1>
         <div class="menu">
-            <a href="index.html" class="menu-opcion"><i class="fas fa-play"></i> Un Jugador</a>
-            <a href="index.html" class="menu-opcion"><i class="fa-solid fa-user-group"></i> Multijugador</a>
-            <a href="menu_opciones.html" class="menu-opcion"><i class="fas fa-cogs"></i> Opciones</a>
-            <a href="menu_puntuaciones.html" class="menu-opcion"><i class="fa-solid fa-star"></i> Puntuaciones</a>
-            <a href="menu_tutorial.html" class="menu-opcion"><i class="fa-solid fa-circle-question"></i> Tutorial</a>
+            <a href="#" id="btn-un-jugador" class="menu-opcion"><i class="fas fa-play"></i> Un Jugador</a>
+            <a href="#" id="btn-multijugador" class="menu-opcion"><i class="fa-solid fa-user-group"></i> Multijugador</a>
+            <a href="#" id="btn-puntuaciones" class="menu-opcion"><i class="fa-solid fa-star"></i> Puntuaciones</a>
+            <a href="#" id="btn-tutorial" class="menu-opcion"><i class="fa-solid fa-circle-question"></i> Tutorial</a>
         </div>
     </div>
+
+    <div class="menu-contenedor" id="escenario">
+        <h1>Car Fixing Simulator!</h1>
+        <div class="menu">
+            <h2><i class="fas fa-cogs"></i> Seleccione el Escenario que desee jugar!</h2>
+            <a href="index.html?escenario=escenario1" class="menu-opcion"><i class="fa-solid fa-gamepad"></i></i> Escenario 1</a>
+            <a href="index.html?escenario=escenario2" class="menu-opcion"><i class="fa-solid fa-gamepad"></i></i> Escenario 2</a>
+            <a href="index.html?escenario=escenario3" class="menu-opcion"><i class="fa-solid fa-gamepad"></i></i> Escenario 3</a>
+            <a href="#" id="btn-volver-escenario" class="menu-opcion"><i class="fa-solid fa-right-from-bracket"></i> Regresar</a>
+        </div>
+    </div>
+
+    <div class="menu-contenedor" id="puntuaciones">
+        <h1>Car Fixing Simulator!</h1>
+        <div class="menu">
+            <div class="menu-opcion-2">
+                <h2><i class="fa-solid fa-star"></i> Puntuaciones</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Posición</th>
+                            <th>Nombre</th>
+                            <th>Tiempo</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td>Jugador1</td>
+                            <td>02:35</td>
+                            <td>1500</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Jugador2</td>
+                            <td>03:10</td>
+                            <td>1400</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a href="#" id="btn-volver-puntuaciones" class="menu-opcion"><i class="fa-solid fa-rotate-left"></i> Regresar</a>
+        </div>
+    </div>
+
+    <div class="menu-contenedor" id="tutorial">
+        <h1>Car Fixing Simulator!</h1>
+        <div class="menu">
+            <div class="menu-opcion-2">
+                <h2><i class="fa-solid fa-circle-question"></i> Tutorial</h2>
+                <table>
+                    <tbody>
+                        <tr>
+                            <th>Mecanica:</th>
+                            <td><i class="fa-solid fa-circle-info"></i> Los jugadores seleccionan partes dañadas del
+                                objeto (por ejemplo, un motor averiado o
+                                una rueda pinchada) y deben realizar reparaciones utilizando herramientas específicas.
+                            </td>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <td><i class="fa-solid fa-circle-info"></i> Habrá una barra de progreso con una zona óptima.
+                                El jugador debe detener la barra en el
+                                punto correcto para realizar la reparación de manera eficiente. Si falla, la reparación
+                                tarda más tiempo.</td>
+                        </tr>
+                        <tr>
+                            <th>Objetivo:</th>
+                            <td><i class="fa-solid fa-circle-info"></i> Realizar todas las reparaciones en el menor
+                                tiempo posible y con la mayor puntuación posible.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <a href="#" id="btn-volver-tutorial" class="menu-opcion"><i class="fa-solid fa-rotate-left"></i> Regresar</a>
+        </div>
+    </div>
+
+	<script src="../JS/menu_principal.js"></script>
+
 </body>
 
 </html>

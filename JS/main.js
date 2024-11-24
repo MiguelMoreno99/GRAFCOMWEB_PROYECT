@@ -4,82 +4,81 @@ import { PointerLockControls } from 'three/addons/controls/PointerLockControls.j
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
-let scene, camera, renderer, controls;
-let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
-let canJump = false;
-let velocity = new THREE.Vector3();
-let direction = new THREE.Vector3();
+// Obtener el escenario de la URL
+const params = new URLSearchParams(window.location.search);
+const escenario = params.get('escenario');
+const btnReanudar = document.getElementById("btn-reanudar");
+const toggleMusica = document.getElementById('activar-musica');
+const toggleSonidos = document.getElementById('activar-efectos');
+
 const speed = 400.0;
 const clock = new THREE.Clock();
+
+// Cajas de colisión
+const objetosConColision = []; // Array para almacenar los objetos que tienen colisión
+const jugadorBox = new THREE.Box3(); // Caja de colisión del jugador
+
+
+let scene, camera, renderer, controls;
+let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+let velocity = new THREE.Vector3();
+let direction = new THREE.Vector3();
+let mouseLocked = false
+let gamePaused = false
+// Variables para el control de audio
+let isMusicaActiva = true;
+let isSonidosActivos = true;
+
+// Variables para el control de countdown
+let gameStarted = false;
+
+// Crear el audio
+const listener = new THREE.AudioListener();
+const audioLoader = new THREE.AudioLoader();
+const audioJuego = new THREE.Audio(listener);
+const audioIniciandoReparacion = new THREE.Audio(listener);
+const audioReparacionFinalizada = new THREE.Audio(listener);
+const audioObject = new THREE.Object3D();
+// Añadir luces
+const ambientLight = new THREE.AmbientLight(0xffffff, 1);
+//MostrarClisiones
+const showColitions = true
 
 init();
 animate();
 
 function init() {
+    alert("Para inicar el juego presiona la tecla ENTER");
+
     // Crear la escena
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xdddddd);
-
     // Crear la cámara
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(-59.6373025839231, 14, 20.74730299518088);
+    camera.position.set(-38.81985205000609, 14, 12.411578414885154);
     camera.rotation.set(-0.6788501149592728, -1.5389407804029573, -0.6786021307204364)
-
     // Crear el renderizador
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
-
     // Crear los controles de ratón (PointerLockControls)
     controls = new PointerLockControls(camera, document.body);
 
-    // Activar los controles con un click
-    document.addEventListener('click', () => {
-        controls.lock();  // Bloquea el puntero
-    });
-
-    // Evento cuando se bloquea el mouse
-    controls.addEventListener('lock', () => {
-        console.log("Mouse locked");
-    });
-
-    // Evento cuando se desbloquea el mouse
-    controls.addEventListener('unlock', () => {
-        console.log("Mouse unlocked");
-    });
-
-    // Crear un plano como "suelo"
-    // const floorGeometry = new THREE.PlaneGeometry(500, 500);
-    // const floorMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
-    // const floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    // floor.rotation.x = -Math.PI / 2;  // Girar para que sea horizontal
-    // floor.position.y = 0;  // Colocarlo en la altura 0 (suelo)
-    // scene.add(floor);
-
-    // Añadir luces
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1);
     scene.add(ambientLight);
     renderer.shadowMap.enabled = true; // Habilitar sombras
 
-    // const spotlight = new THREE.SpotLight(0xffffff, 100,40,10); // Luz direccional
-    // spotlight.position.set(0,20).normalize();
-    // scene.add(spotlight);
-    // spotlight.position.x = 0;
-    // spotlight.position.y = 10;
-    // spotlight.position.z = -8;
-    // const spotlighthelper = new THREE.SpotLightHelper(spotlight,10);  // El número define la longitud de los ejes
-    // spotlight.add(spotlighthelper);  // Añadir el helper al cubo (o modelo)
+    addEventsListeners();
+    loadAudio();
+    loadScene();
 
-    loadLvL1Models();
-    //loadLvL2Models();
-    //loadLvL3Models();
+    // Crear las paredes con colisión
+    const pared1 = loadBoxColition(130, 35, 8, 0, 15, -40, showColitions);
+    const pared2 = loadBoxColition(130, 35, 8, 0, 15, 107, showColitions);
+    const pared3 = loadBoxColition(8, 35, 150, -60, 15, 30, showColitions);
+    const pared4 = loadBoxColition(8, 35, 150, 60, 15, 30, showColitions);
+    const carro1 = loadBoxColition(38, 35, 15, -31, 15, -7, showColitions);
+    const carro2 = loadBoxColition(38, 35, 15, 29, 15, 74, showColitions);
 
-    // Evento de teclas para movimiento
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
-
-    // Ajustar la ventana en caso de cambio de tamaño
-    window.addEventListener('resize', onWindowResize, false);
 }
 
 function onWindowResize() {
@@ -89,25 +88,64 @@ function onWindowResize() {
 }
 
 function onKeyDown(event) {
-    switch (event.code) {
-        case 'KeyW':
-            moveForward = true;
-            break;
-        case 'KeyS':
-            moveBackward = true;
-            break;
-        case 'KeyA':
-            moveLeft = true;
-            break;
-        case 'KeyD':
-            moveRight = true;
-            break;
-        case 'KeyP':
-            console.log(camera.position);
-            break;
-        case 'KeyR':
-            console.log(camera.rotation);
-            break;
+    if (mouseLocked) {
+        switch (event.code) {
+            case 'KeyW':
+                moveForward = true;
+                break;
+            case 'KeyS':
+                moveBackward = true;
+                break;
+            case 'KeyA':
+                moveLeft = true;
+                break;
+            case 'KeyD':
+                moveRight = true;
+                break;
+            case 'KeyP':
+                controls.unlock();  // Bloquea el puntero
+                mouseLocked = false
+                gamePaused = true
+                break;
+            case 'KeyI':
+                console.log(camera.rotation);
+                console.log(camera.position);
+                break;
+            case 'Escape':
+                mouseLocked = false;
+                break;
+            case 'Enter':
+                if (gamePaused) {
+                    controls.lock();  // Bloquea el puntero
+                    mouseLocked = true;
+                    //audioJuego.play();
+                }
+                if (!gameStarted) {
+                    startCountdown(180, () => {
+                        console.log("¡Tiempo terminado!");
+                        // Aquí puedes agregar lógica adicional si es necesario
+                    });
+                    gameStarted = true
+                }
+                break;
+        }
+    } else {
+        switch (event.code) {
+            case 'Enter':
+                if (!gamePaused) {
+                    controls.lock();  // Bloquea el puntero
+                    mouseLocked = true;
+                    //audioJuego.play();
+                }
+                if (!gameStarted) {
+                    startCountdown(180, () => {
+                        console.log("¡Tiempo terminado!");
+                        // Aquí puedes agregar lógica adicional si es necesario
+                    });
+                    gameStarted = true
+                }
+                break;
+        }
     }
 }
 
@@ -124,6 +162,9 @@ function onKeyUp(event) {
             break;
         case 'KeyD':
             moveRight = false;
+            break;
+        case 'Escape':
+            mouseLocked = false;
             break;
     }
 }
@@ -143,11 +184,38 @@ function animate() {
     if (moveForward || moveBackward) velocity.z += direction.z * speed * delta;
     if (moveLeft || moveRight) velocity.x -= direction.x * speed * delta;
 
-    controls.object.position.addScaledVector(controls.object.getWorldDirection(new THREE.Vector3()).setY(0), velocity.z * delta);
-    controls.object.position.addScaledVector(new THREE.Vector3().crossVectors(camera.up, controls.object.getWorldDirection(new THREE.Vector3())).normalize(), velocity.x * delta);
+    // Guardar la posición actual del jugador
+    const prevPosition = controls.object.position.clone();
 
-    //console.log(camera.rotation);
-    //console.log(camera.position);
+    // controls.object.position.addScaledVector(controls.object.getWorldDirection(new THREE.Vector3()).setY(0), velocity.z * delta);
+    // controls.object.position.addScaledVector(new THREE.Vector3().crossVectors(camera.up, controls.object.getWorldDirection(new THREE.Vector3())).normalize(), velocity.x * delta);
+
+    // Mover el jugador
+    controls.object.position.addScaledVector(
+        controls.object.getWorldDirection(new THREE.Vector3()).setY(0),
+        velocity.z * delta
+    );
+    controls.object.position.addScaledVector(
+        new THREE.Vector3()
+            .crossVectors(camera.up, controls.object.getWorldDirection(new THREE.Vector3()))
+            .normalize(),
+        velocity.x * delta
+    );
+
+    // Actualizar la caja del jugador
+    jugadorBox.setFromCenterAndSize(
+        controls.object.position,
+        new THREE.Vector3(1, 1, 1) // Tamaño del jugador (puedes ajustar esto)
+    );
+
+    // Comprobar colisiones
+    for (const objetoBox of objetosConColision) {
+        if (jugadorBox.intersectsBox(objetoBox)) {
+            // Si hay colisión, revertir a la posición anterior
+            controls.object.position.copy(prevPosition);
+            break; // Salir del bucle al detectar colisión
+        }
+    }
 
     renderer.render(scene, camera);
 }
@@ -380,3 +448,143 @@ function loadLvL3Models() {
     loadGLTFmodel(car2, '../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
 
 }
+
+function loadAudio() {
+    //Audio del juego
+    audioLoader.load('../AUDIO/Spark_Elwood.mp3', function (buffer) {
+        audioJuego.setBuffer(buffer);
+        audioJuego.setLoop(true);
+        audioJuego.setVolume(0.01); // ajustar el volumen (de 0 a 1)
+        audioJuego.play();
+        audioJuego.pause();
+    });
+
+    //Audio de efecto
+    audioLoader.load('../AUDIO/iniciandoReparacion.mp3', function (buffer) {
+        audioIniciandoReparacion.setBuffer(buffer);
+        audioIniciandoReparacion.setLoop(true);
+        audioIniciandoReparacion.setVolume(0.06); // ajustar el volumen (de 0 a 1)
+        audioIniciandoReparacion.play();
+        audioIniciandoReparacion.pause();
+    });
+
+    //Audio de efecto
+    audioLoader.load('../AUDIO/reparacionExitosa.mp3', function (buffer) {
+        audioReparacionFinalizada.setBuffer(buffer);
+        audioReparacionFinalizada.setLoop(true);
+        audioReparacionFinalizada.setVolume(0.06); // ajustar el volumen (de 0 a 1)
+        audioReparacionFinalizada.play();
+        audioReparacionFinalizada.pause();
+    });
+
+    // Evento para detectar cambios en los checkboxes
+    toggleMusica.addEventListener('change', (event) => {
+        isMusicaActiva = event.target.checked;
+        if (isMusicaActiva) {
+            audioJuego.play();
+        } else {
+            audioJuego.pause();
+        }
+    });
+
+    toggleSonidos.addEventListener('change', (event) => {
+        isSonidosActivos = event.target.checked;
+        if (isSonidosActivos) {
+            audioIniciandoReparacion.play();
+            audioReparacionFinalizada.play();
+        } else {
+            audioReparacionFinalizada.pause();
+            audioIniciandoReparacion.pause();
+        }
+    });
+
+    audioObject.add(audioJuego);
+    camera.add(audioObject); // Agregar el objeto contenedor a la cámara
+    audioObject.add(audioIniciandoReparacion);
+    camera.add(audioObject); // Agregar el objeto contenedor a la cámara
+    audioObject.add(audioReparacionFinalizada);
+    camera.add(audioObject); // Agregar el objeto contenedor a la cámara
+}
+
+function addEventsListeners() {
+    // Evento para el botón de ocultar el menu
+    btnReanudar.addEventListener("click", () => {
+        controls.lock();
+        mouseLocked = true;
+        gamePaused = false
+    });
+
+    // Evento de teclas para movimiento
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keyup', onKeyUp);
+
+    // Ajustar la ventana en caso de cambio de tamaño
+    window.addEventListener('resize', onWindowResize, false);
+}
+
+function loadScene() {
+    // Determinar qué escenario cargar
+    if (escenario === 'escenario1') {
+        loadLvL1Models();
+    } else if (escenario === 'escenario2') {
+        loadLvL2Models();
+    } else if (escenario === 'escenario3') {
+        loadLvL3Models();
+    } else {
+        // Mostrar un mensaje al usuario y redirigirlo al menú principal
+        alert("Escenario no válido. Regresando al menú principal...");
+        window.location.href = 'menu_principal.html'; // Cambia "menu.html" al nombre correcto de tu menú principal
+    }
+}
+
+function loadBoxColition(x, y, z, posx, posy, posz, visible = false) {
+    // Material configurable
+    const material = visible
+        ? new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            transparent: true,
+            opacity: 0.3,
+        })
+        : new THREE.MeshBasicMaterial({ visible: false });
+
+    // Crear el Mesh (caja)
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(x, y, z), material);
+    mesh.position.set(posx, posy, posz);
+    scene.add(mesh);
+
+    // Crear la caja de colisión
+    const box = new THREE.Box3().setFromObject(mesh);
+
+    // Agregar a los objetos con colisión
+    objetosConColision.push(box);
+
+    // Devolver el Mesh y la Box3
+    return { mesh, box };
+}
+
+function startCountdown(durationInSeconds, onComplete) {
+    const countdownElement = document.getElementById('countdown');
+    let remainingTime = durationInSeconds;
+
+    function updateCountdown() {
+        // Calcular minutos y segundos
+        const minutes = Math.floor(remainingTime / 60);
+        const seconds = remainingTime % 60;
+
+        // Actualizar el texto del elemento HTML
+        countdownElement.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (remainingTime > 0) {
+            remainingTime--; // Reducir tiempo restante
+        } else {
+            clearInterval(timerInterval); // Detener el intervalo
+            if (onComplete) onComplete(); // Llamar a la función de completado
+        }
+    }
+
+    // Actualizar inmediatamente y luego cada segundo
+    updateCountdown();
+    const timerInterval = setInterval(updateCountdown, 1000);
+}
+
+

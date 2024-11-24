@@ -82,3 +82,19 @@ input[type="checkbox"] {
 #opciones {
     display: none; /* Oculta los contenedores inicialmente */
 }
+
+#countdown {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2em;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    z-index: 10;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.5); /* Fondo semi-transparente */
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid white;
+}

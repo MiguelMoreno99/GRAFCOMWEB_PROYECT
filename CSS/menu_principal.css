@@ -88,7 +88,8 @@ h2 {
 #escenario,
 #opciones,
 #puntuaciones,
-#tutorial {
+#tutorial,
+#dificultad {
     display: none; /* Oculta los contenedores inicialmente */
 }
 

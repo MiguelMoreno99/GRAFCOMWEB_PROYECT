@@ -1,8 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
-import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-app.js";
 import {
     getAuth,
@@ -21,6 +19,26 @@ import {
 const params = new URLSearchParams(window.location.search);
 const escenario = params.get('escenario');
 const modojuego = params.get('modo');
+const nivel = params.get('nivel');
+
+if (escenario == null) {
+    // Mostrar un mensaje al usuario y redirigirlo al menú principal
+    alert("Escenario no válido. Regresando al menú principal...");
+    window.location.href = 'menu_principal.html'
+}
+if (modojuego == null) {
+    // Mostrar un mensaje al usuario y redirigirlo al menú principal
+    alert("Modo de juego no válido. Regresando al menú principal...");
+    window.location.href = 'menu_principal.html';
+}
+if (nivel == null) {
+    // Mostrar un mensaje al usuario y redirigirlo al menú principal
+    alert("Nivel no válido. Regresando al menú principal...");
+    window.location.href = 'menu_principal.html';
+}
+if ((escenario != null) && (modojuego != null) && (nivel != null)) {
+    alert("Para inicar el juego presiona la tecla ENTER");
+}
 
 // Your web app's Firebase configuration
 let firebaseConfig = null;
@@ -117,12 +135,30 @@ let car1 = null;
 let car2 = null;
 let mechanic = null;
 
+// Variables para la barra 
+const recargaBarra = document.getElementById("recarga-barra");
+const recargaLinea = document.getElementById("recarga-linea");
+let moviendoDerecha = true; // Dirección del movimiento
+let posicionLinea = 0;      // Posición actual (en píxeles)
+let velocidadLinea = 1;
+let tiempoJuego = 1; //en segundos
+if (nivel == "normal") {
+    velocidadLinea = 4;     // Velocidad de movimiento (píxeles por cuadro)
+    tiempoJuego = 180;
+}
+if (nivel == "dificil") {
+    velocidadLinea = 7;     // Velocidad de movimiento (píxeles por cuadro)
+    tiempoJuego = 5;
+}
+let intervalo = null;
+let puntuacionTotal = 0;
+const marcador = document.getElementById("marcador");
+let juegoFinalizado = false;
+
 init();
 animate();
 
 function init() {
-    alert("Para inicar el juego presiona la tecla ENTER");
-
     // Crear la escena
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xdddddd);
@@ -163,81 +199,93 @@ function onWindowResize() {
 }
 
 function onKeyDown(event) {
-    if (mouseLocked) {
+    if (!juegoFinalizado) {
 
-        if (modojuego === "multijugador") {
-            jugadorActual = scene.getObjectByName(currentUser.uid);
-        }
+        if (mouseLocked) {
 
-        switch (event.code) {
-            case 'KeyW':
-                moveForward = true;
-                break;
-            case 'KeyS':
-                moveBackward = true;
-                break;
-            case 'KeyA':
-                moveLeft = true;
-                break;
-            case 'KeyD':
-                moveRight = true;
-                break;
-            case 'KeyP':
-                controls.unlock();  // Bloquea el puntero
-                mouseLocked = false
-                gamePaused = true
-                break;
-            case 'KeyI':
-                console.log(camera.rotation);
-                console.log(camera.position);
-                break;
-            case 'Escape':
-                mouseLocked = false;
-                break;
-            case 'Enter':
-                if (gamePaused) {
-                    controls.lock();  // Bloquea el puntero
-                    mouseLocked = true;
-                    //audioJuego.play();
-                }
-                if (!gameStarted) {
-                    startCountdown(180, () => {
-                        console.log("¡Tiempo terminado!");
-                        // Aquí puedes agregar lógica adicional si es necesario
-                    });
-                    gameStarted = true
-                }
-                break;
-        }
+            if (modojuego === "multijugador") {
+                jugadorActual = scene.getObjectByName(currentUser.uid);
+            }
 
-        if (modojuego === "multijugador") {
-            writeUserData(
-                currentUser.uid,
-                jugadorActual.position.x,
-                jugadorActual.position.z,
+            switch (event.code) {
+                case 'Space':
+                    console.log("espacio precionado");
+                    detenerRecarga();
+                    break;
+                case 'KeyR':
+                    console.log("R precionada");
+                    iniciarRecarga();
+                    break;
+                case 'KeyW':
+                    moveForward = true;
+                    break;
+                case 'KeyS':
+                    moveBackward = true;
+                    break;
+                case 'KeyA':
+                    moveLeft = true;
+                    break;
+                case 'KeyD':
+                    moveRight = true;
+                    break;
+                case 'KeyP':
+                    controls.unlock();  // Bloquea el puntero
+                    mouseLocked = false
+                    gamePaused = true
+                    break;
+                case 'KeyI':
+                    console.log(camera.rotation);
+                    console.log(camera.position);
+                    break;
+                case 'Escape':
+                    mouseLocked = false;
+                    break;
+                case 'Enter':
+                    if (gamePaused) {
+                        controls.lock();  // Bloquea el puntero
+                        mouseLocked = true;
+                        if (isMusicaActiva) {
+                            audioJuego.play();
+                        }
+                    }
+                    if (!gameStarted) {
+                        gameStarted = true;
+                    }
+                    break;
+            }
 
-                jugadorActual.rotation.x,
-                jugadorActual.rotation.y,
-                jugadorActual.rotation.z,
-            );
-        }
+            if (modojuego === "multijugador") {
+                writeUserData(
+                    currentUser.uid,
+                    jugadorActual.position.x,
+                    jugadorActual.position.z,
 
-    } else {
-        switch (event.code) {
-            case 'Enter':
-                if (!gamePaused) {
-                    controls.lock();  // Bloquea el puntero
-                    mouseLocked = true;
-                    //audioJuego.play();
-                }
-                if (!gameStarted) {
-                    startCountdown(180, () => {
-                        console.log("¡Tiempo terminado!");
-                        // Aquí puedes agregar lógica adicional si es necesario
-                    });
-                    gameStarted = true
-                }
-                break;
+                    jugadorActual.rotation.x,
+                    jugadorActual.rotation.y,
+                    jugadorActual.rotation.z,
+                );
+            }
+
+        } else {
+            switch (event.code) {
+                case 'Enter':
+                    if (!gamePaused) {
+                        controls.lock();  // Bloquea el puntero
+                        mouseLocked = true;
+                        if (isMusicaActiva) {
+                            audioJuego.play();
+                        }
+                    }
+                    if (!gameStarted) {
+                        startCountdown(tiempoJuego, () => {
+                            console.log("¡Tiempo terminado!");
+                            finalizarJuego();
+                            // Aquí puedes agregar lógica adicional si es necesario
+                        });
+                        gameStarted = true
+                    }
+                    break;
+            }
         }
     }
 }
@@ -524,6 +572,35 @@ function addEventsListeners() {
 
     // Ajustar la ventana en caso de cambio de tamaño
     window.addEventListener('resize', onWindowResize, false);
+
+    document.getElementById("guardar-puntuacion").addEventListener("click", () => {
+        const nombre = document.getElementById("nombre-usuario").value;
+    
+        if (nombre.trim() === "") {
+            alert("Por favor, ingresa tu nombre.");
+            return;
+        }
+    
+        fetch('http://localhost/CARSIMULATORFILE/guardar_puntuacion.php', { // URL del archivo PHP
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nombre: nombre,
+                puntuacion: puntuacionTotal
+            })
+        })
+        .then((response) => response.text())
+        .then((data) => {
+            alert('Se guardo la puntuación.');
+            window.location.href = 'menu_principal.html';
+        })
+        .catch((error) => {
+            console.error('Error al guardar la puntuación:', error);
+            alert('Hubo un error al guardar la puntuación.');
+        });
+    });
 }
 
 function loadScene() {
@@ -534,10 +611,6 @@ function loadScene() {
         loadLvL2Models();
     } else if (escenario === 'escenario3') {
         loadLvL3Models();
-    } else {
-        // Mostrar un mensaje al usuario y redirigirlo al menú principal
-        alert("Escenario no válido. Regresando al menú principal...");
-        window.location.href = 'menu_principal.html'; // Cambia "menu.html" al nombre correcto de tu menú principal
     }
 }
 
@@ -683,4 +756,77 @@ function loadMultiplayer() {
         });
     });
     jugadorActual = null;
+}
+
+function iniciarRecarga() {
+    recargaBarra.style.display = "block"; // Mostrar la barra
+    posicionLinea = 0;                    // Reiniciar la posición
+    moviendoDerecha = true;
+    if (isSonidosActivos) {
+        audioIniciandoReparacion.play();
+    }
+
+    intervalo = setInterval(() => {
+        // Mover la línea en la dirección actual
+        if (moviendoDerecha) {
+            posicionLinea += velocidadLinea;
+            if (posicionLinea >= 290) { // Si llega al final, cambia de dirección
+                moviendoDerecha = false;
+            }
+        } else {
+            posicionLinea -= velocidadLinea;
+            if (posicionLinea <= 0) { // Si llega al inicio, cambia de dirección
+                moviendoDerecha = true;
+            }
+        }
+
+        // Actualizar la posición de la línea
+        recargaLinea.style.left = `${posicionLinea}px`;
+    }, 16); // 16ms para ~60 FPS
+}
+
+function calcularPuntuacion(posicion) {
+    const centro = 150; // Centro de la barra (mitad de 300px)
+    const distanciaDelCentro = Math.abs(centro - posicion);
+    return Math.max(0, 100 - distanciaDelCentro); // Menor distancia, mayor puntuación
+}
+
+function detenerRecarga() {
+    clearInterval(intervalo); // Detener el movimiento de la línea
+    recargaBarra.style.display = "none"; // Ocultar la barra
+    if (isSonidosActivos) {
+        audioIniciandoReparacion.pause();
+    }
+    // Calcular puntuación actual
+    const puntuacionActual = calcularPuntuacion(posicionLinea);
+    if (puntuacionActual > 90) {
+        if (isSonidosActivos) {
+            audioReparacionFinalizada.play();
+            setTimeout(detenerAudio, 2000);
+        }
+    }
+
+    console.log(`Puntuación: ${puntuacionActual}`);
+
+    // Sumar al puntaje total
+    puntuacionTotal += puntuacionActual;
+
+    // Actualizar el marcador
+    marcador.textContent = `Puntuación: ${puntuacionTotal}`;
+
+}
+
+function detenerAudio() {
+    audioReparacionFinalizada.pause();
+}
+
+function finalizarJuego() {
+    // Mostrar el modal
+    const modal = document.getElementById("modal");
+    modal.style.display = "flex";
+    juegoFinalizado= true;
+    controls.unlock();
+    // Mostrar la puntuación final
+    const finalPuntuacion = document.getElementById("final-puntuacion");
+    finalPuntuacion.textContent = `Tu puntuación: ${puntuacionTotal}`;
 }

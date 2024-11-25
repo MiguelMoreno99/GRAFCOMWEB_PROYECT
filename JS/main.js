@@ -125,15 +125,25 @@ let weelG1w1 = null;
 let weelG1w2 = null;
 let weelG1w3 = null;
 let weelG1w4 = null;
-let weel_wrench1 = null;
-let extinguisher1 = null;
-let gasoline1 = null;
 let engine1 = null;
-let impact_wrench1 = null;
 let paper_tablet1 = null;
 let car1 = null;
 let car2 = null;
 let mechanic = null;
+
+let weel_wrench1 = null;
+let weel_wrench1OriginalPosition = null; // Posición inicial del objeto
+
+let extinguisher1 = null;
+let extinguisher1OriginalPosition = null; // Posición inicial del objeto
+
+let gasoline1 = null;
+let gasoline1OriginalPosition = null; // Posición inicial del objeto
+
+let impact_wrench1 = null;
+let impact_wrench1OriginalPosition = null; // Posición inicial del objeto
+
+let objetoEnMano = false; // Bandera para saber si el jugador tiene el objeto
 
 // Variables para la barra 
 const recargaBarra = document.getElementById("recarga-barra");
@@ -147,8 +157,8 @@ if (nivel == "normal") {
     tiempoJuego = 180;
 }
 if (nivel == "dificil") {
-    velocidadLinea = 7;     // Velocidad de movimiento (píxeles por cuadro)
-    tiempoJuego = 5;
+    velocidadLinea = 8;     // Velocidad de movimiento (píxeles por cuadro)
+    tiempoJuego = 60;
 }
 let intervalo = null;
 let puntuacionTotal = 0;
@@ -180,16 +190,7 @@ function init() {
     loadAudio();
     loadScene();
 
-    // Crear las paredes con colisión
-    const pared1 = loadBoxColition(130, 35, 8, 0, 15, -40, showColitions, "pared1");
-    const pared2 = loadBoxColition(130, 35, 8, 0, 15, 107, showColitions, "pared2");
-    const pared3 = loadBoxColition(8, 35, 150, -60, 15, 30, showColitions, "pared3");
-    const pared4 = loadBoxColition(8, 35, 150, 60, 15, 30, showColitions, "pared4");
-    const carro1 = loadBoxColition(38, 35, 15, -31, 15, -7, showColitions, "carro1");
-    const carro2 = loadBoxColition(38, 35, 15, 29, 15, 74, showColitions, "carro2");
-
     scene.add(jugadorHelper);
-
 }
 
 function onWindowResize() {
@@ -372,7 +373,7 @@ function animate() {
     // Actualizar la caja del jugador
     jugadorBox.setFromCenterAndSize(
         controls.object.position,
-        new THREE.Vector3(1, 1, 1) // Tamaño del jugador (puedes ajustar esto)
+        new THREE.Vector3(5, 10, 5) // Tamaño del jugador (puedes ajustar esto)
     );
 
     // Comprobar colisiones
@@ -448,14 +449,33 @@ async function loadLvL1Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
-    extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+    weel_wrench1OriginalPosition = await weelG1w4.position.clone();
+    extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 5, 3.5, 13, .11, .11, .11, 0, 0, 0, false);
+    extinguisher1OriginalPosition = await extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+    gasoline1OriginalPosition = await gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
     impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+    impact_wrench1OriginalPosition = await impact_wrench1.position.clone();
     paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
     if (modojuego === "jugador") {
         mechanic = await loadGLTFmodel('../models/props/car_mechanic.glb', -40, -1, 40, 7, 7, 7, 0, 0, 0, false);
     }
+
+    if ((weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null)) {
+        const weel_wrench = loadBoxColition(10, 10, 10, weel_wrench1OriginalPosition.x, weel_wrench1OriginalPosition.y, weel_wrench1OriginalPosition.z, showColitions, "Llave X");
+        const extinguisher = loadBoxColition(10, 15, 10, extinguisher1OriginalPosition.x, extinguisher1OriginalPosition.y, extinguisher1OriginalPosition.z, showColitions, "Extintor");
+        const gasoline = loadBoxColition(10, 15, 10, gasoline1OriginalPosition.x, gasoline1OriginalPosition.y, gasoline1OriginalPosition.z, showColitions, "Gasolina");
+        const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto");
+        console.log("Special objects loaded");
+    }
+    // Crear las paredes con colisión
+    const pared1 = loadBoxColition(130, 35, 8, 0, 15, -40, showColitions, "pared1");
+    const pared2 = loadBoxColition(130, 35, 8, 0, 15, 107, showColitions, "pared2");
+    const pared3 = loadBoxColition(8, 35, 150, -60, 15, 30, showColitions, "pared3");
+    const pared4 = loadBoxColition(8, 35, 150, 60, 15, 30, showColitions, "pared4");
+    const carro1 = loadBoxColition(38, 35, 15, -31, 15, -7, showColitions, "carro1");
+    const carro2 = loadBoxColition(38, 35, 15, 29, 15, 74, showColitions, "carro2");
 }
 
 async function loadLvL2Models() {
@@ -470,10 +490,14 @@ async function loadLvL2Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+    weel_wrench1OriginalPosition = weelG1w4.position.clone();
     extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+    extinguisher1OriginalPosition = extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+    gasoline1OriginalPosition = gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
     impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+    impact_wrench1OriginalPosition = impact_wrench1.position.clone();
     paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
     car1 = await loadGLTFmodel('../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
     car2 = await loadGLTFmodel('../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
@@ -489,10 +513,14 @@ async function loadLvL3Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+    weel_wrench1OriginalPosition = weelG1w4.position.clone();
     extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+    extinguisher1OriginalPosition = extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+    gasoline1OriginalPosition = gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
     impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+    impact_wrench1OriginalPosition = impact_wrench1.position.clone();
     paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
     car1 = await loadGLTFmodel('../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
     car2 = await loadGLTFmodel('../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
@@ -506,7 +534,7 @@ function loadAudio() {
     audioLoader.load('../AUDIO/Spark_Elwood.mp3', function (buffer) {
         audioJuego.setBuffer(buffer);
         audioJuego.setLoop(true);
-        audioJuego.setVolume(0.01); // ajustar el volumen (de 0 a 1)
+        audioJuego.setVolume(.5); // ajustar el volumen (de 0 a 1)
         audioJuego.play();
         audioJuego.pause();
     });
@@ -515,7 +543,7 @@ function loadAudio() {
     audioLoader.load('../AUDIO/iniciandoReparacion.mp3', function (buffer) {
         audioIniciandoReparacion.setBuffer(buffer);
         audioIniciandoReparacion.setLoop(true);
-        audioIniciandoReparacion.setVolume(0.06); // ajustar el volumen (de 0 a 1)
+        audioIniciandoReparacion.setVolume(0.6); // ajustar el volumen (de 0 a 1)
         audioIniciandoReparacion.play();
         audioIniciandoReparacion.pause();
     });
@@ -524,7 +552,7 @@ function loadAudio() {
     audioLoader.load('../AUDIO/reparacionExitosa.mp3', function (buffer) {
         audioReparacionFinalizada.setBuffer(buffer);
         audioReparacionFinalizada.setLoop(true);
-        audioReparacionFinalizada.setVolume(0.06); // ajustar el volumen (de 0 a 1)
+        audioReparacionFinalizada.setVolume(0.6); // ajustar el volumen (de 0 a 1)
         audioReparacionFinalizada.play();
         audioReparacionFinalizada.pause();
     });
@@ -542,11 +570,9 @@ function loadAudio() {
     toggleSonidos.addEventListener('change', (event) => {
         isSonidosActivos = event.target.checked;
         if (isSonidosActivos) {
-            audioIniciandoReparacion.play();
-            audioReparacionFinalizada.play();
+
         } else {
-            audioReparacionFinalizada.pause();
-            audioIniciandoReparacion.pause();
+
         }
     });
 
@@ -575,12 +601,12 @@ function addEventsListeners() {
 
     document.getElementById("guardar-puntuacion").addEventListener("click", () => {
         const nombre = document.getElementById("nombre-usuario").value;
-    
+
         if (nombre.trim() === "") {
             alert("Por favor, ingresa tu nombre.");
             return;
         }
-    
+
         fetch('http://localhost/CARSIMULATORFILE/guardar_puntuacion.php', { // URL del archivo PHP
             method: 'POST',
             headers: {
@@ -591,15 +617,15 @@ function addEventsListeners() {
                 puntuacion: puntuacionTotal
             })
         })
-        .then((response) => response.text())
-        .then((data) => {
-            alert('Se guardo la puntuación.');
-            window.location.href = 'menu_principal.html';
-        })
-        .catch((error) => {
-            console.error('Error al guardar la puntuación:', error);
-            alert('Hubo un error al guardar la puntuación.');
-        });
+            .then((response) => response.text())
+            .then((data) => {
+                alert('Se guardo la puntuación.');
+                window.location.href = 'menu_principal.html';
+            })
+            .catch((error) => {
+                console.error('Error al guardar la puntuación:', error);
+                alert('Hubo un error al guardar la puntuación.');
+            });
     });
 }
 
@@ -824,7 +850,7 @@ function finalizarJuego() {
     // Mostrar el modal
     const modal = document.getElementById("modal");
     modal.style.display = "flex";
-    juegoFinalizado= true;
+    juegoFinalizado = true;
     controls.unlock();
     // Mostrar la puntuación final
     const finalPuntuacion = document.getElementById("final-puntuacion");

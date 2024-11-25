@@ -193,3 +193,15 @@ input[type="checkbox"] {
     border-radius: 4px;
     cursor: pointer;
 }
+
+#mensaje-interaccion {
+    display: none;
+    position: absolute;
+    top: 80%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+}

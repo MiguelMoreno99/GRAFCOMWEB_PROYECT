@@ -3,9 +3,17 @@ document.addEventListener("DOMContentLoaded", () => {
     // Seleccionar los elementos
     const pausaMenu = document.getElementById("pausa");
     const opcionesMenu = document.getElementById("opciones");
+    const opcionesLogin = document.getElementById("login");
     const btnOpciones = document.getElementById("btn-opciones");
     const btnVolverPausa = document.getElementById("btn-volver-pausa");
     const btnReanudar = document.getElementById("btn-reanudar");
+
+    const params = new URLSearchParams(window.location.search);
+    const modojuego = params.get('modo');
+
+    if(modojuego === "multijugador"){
+        opcionesLogin.style.display = "flex"; // Cambia a flex para que el menú sea visible
+    }
 
     // Función para mostrar un menú y ocultar el otro
     function mostrarMenu(mostrar, ocultar) {

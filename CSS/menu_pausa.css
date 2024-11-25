@@ -79,7 +79,8 @@ input[type="checkbox"] {
 }
 
 #pausa,
-#opciones {
+#opciones,
+#login {
     display: none; /* Oculta los contenedores inicialmente */
 }
 

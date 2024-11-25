@@ -23,9 +23,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // Eventos para los botónes de opciones
     btnUnJugador.addEventListener("click", () => {
         mostrarMenu(escenario, menu);
+        // Agrega el modo al evento de clic de cada escenario
+        document.querySelectorAll("#escenario a").forEach((link) => {
+            if (link.href.includes("escenario")) {
+                const url = new URL(link.href);
+                url.searchParams.set("modo", "jugador"); // Añade el parámetro del modo
+                link.href = url.toString(); // Actualiza el href con el nuevo URL
+            }
+        });
     });
     btnMultijugador.addEventListener("click", () => {
         mostrarMenu(escenario, menu);
+        // Agrega el modo al evento de clic de cada escenario
+        document.querySelectorAll("#escenario a").forEach((link) => {
+            if (link.href.includes("escenario")) {
+                const url = new URL(link.href);
+                url.searchParams.set("modo", "multijugador"); // Añade el parámetro del modo
+                link.href = url.toString(); // Actualiza el href con el nuevo URL
+            }
+        });
     });
     btnPuntuaciones.addEventListener("click", () => {
         mostrarMenu(puntuaciones, menu);
@@ -44,9 +60,4 @@ document.addEventListener("DOMContentLoaded", () => {
     btnVolverTutorial.addEventListener("click", () => {
         mostrarMenu(menu, tutorial);
     });
-
-    function cargarEscenario(escenario) {
-        // Redirige al archivo canvas.html con el escenario como parámetro
-        window.location.href = `index.html?escenario=${escenario}`;
-    }
 });

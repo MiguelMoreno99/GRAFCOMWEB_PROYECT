@@ -146,6 +146,7 @@ let impact_wrench1OriginalPosition = null; // Posición inicial del objeto
 let objetoEnMano = false; // Bandera para saber si el jugador tiene el objeto
 let interfazMostrada = false; // Bandera para saber si el jugador se le muestra la interfaz
 let nombreObjetoEnMano = "";
+let nombreObjetoColision = "";
 
 // Variables para la barra 
 const recargaBarra = document.getElementById("recarga-barra");
@@ -215,7 +216,7 @@ function onKeyDown(event) {
                     detenerRecarga();
                     break;
                 case 'KeyR':
-                    if (objetoEnMano) {
+                    if (objetoEnMano && (nombreObjetoColision === "carro1" || nombreObjetoColision === "carro2")) {
                         iniciarRecarga();
                     }
                     break;
@@ -437,7 +438,11 @@ function animate() {
                 // Si hay colisión, revertir a la posición anterior
                 controls.object.position.copy(prevPosition);
                 console.log("Colision con: ", objetosConColision[i + 1]);
+                nombreObjetoColision = objetosConColision[i + 1];
                 break; // Salir del bucle al detectar colisión
+            }
+            else {
+                nombreObjetoColision = "";
             }
         }
     }
@@ -561,16 +566,16 @@ async function loadLvL2Models() {
     weelG1w2 = await loadGLTFmodel('../models/props/weel.glb', 43, 3.2, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
-    weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
+    weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 12, -28, 18, 18, 18, 0, 0, 0, false);
     weel_wrench1OriginalPosition = await weel_wrench1.position.clone();
-    extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
+    extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 23, 3.5, 3, .11, .11, .11, 0, 0, 0, false);
     extinguisher1OriginalPosition = await extinguisher1.position.clone();
-    gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
+    gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', -24, 5, 8, 15, 15, 15, 0, 0, 0, false);
     gasoline1OriginalPosition = await gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
-    impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
+    impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -6, 10, -34, 10, 10, 10, 0, 0, 0, false);
     impact_wrench1OriginalPosition = await impact_wrench1.position.clone();
-    paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
+    paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 3, 8.51, -37, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
     car1 = await loadGLTFmodel('../models/props/car5.glb', 41, 5, 77, 18, 18, 18, 0, 0, 0, false);
     car2 = await loadGLTFmodel('../models/props/car5.glb', -41, 5, 55, 18, 18, 18, 0, 0, 0, false);
     if (modojuego === "jugador") {
@@ -620,7 +625,7 @@ function loadAudio() {
     audioLoader.load('../AUDIO/Spark_Elwood.mp3', function (buffer) {
         audioJuego.setBuffer(buffer);
         audioJuego.setLoop(true);
-        audioJuego.setVolume(.5); // ajustar el volumen (de 0 a 1)
+        audioJuego.setVolume(.01); // ajustar el volumen (de 0 a 1)
         audioJuego.play();
         audioJuego.pause();
     });

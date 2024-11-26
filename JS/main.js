@@ -215,7 +215,9 @@ function onKeyDown(event) {
                     detenerRecarga();
                     break;
                 case 'KeyR':
-                    iniciarRecarga();
+                    if (objetoEnMano) {
+                        iniciarRecarga();
+                    }
                     break;
                 case 'KeyE':
                     if (interfazMostrada) {

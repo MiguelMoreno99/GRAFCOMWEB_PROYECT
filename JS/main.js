@@ -588,6 +588,9 @@ async function loadLvL2Models() {
         const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto", true);
         console.log("Special objects loaded");
     }
+    // Crear las paredes con colisión
+    const carro1 = loadBoxColition(15, 35, 38, 41, 15, 77, showColitions, "carro1");
+    const carro2 = loadBoxColition(15, 35, 38, -41, 15, 55, showColitions, "carro2");
 }
 
 async function loadLvL3Models() {
@@ -618,6 +621,9 @@ async function loadLvL3Models() {
         const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto", true);
         console.log("Special objects loaded");
     }
+    // Crear las paredes con colisión
+    const carro1 = loadBoxColition(15, 35, 38, 0, 15, 0, showColitions, "carro1");
+    const carro2 = loadBoxColition(15, 35, 38, 30, 15, 0, showColitions, "carro2");
 }
 
 function loadAudio() {

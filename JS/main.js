@@ -144,6 +144,8 @@ let impact_wrench1 = null;
 let impact_wrench1OriginalPosition = null; // Posición inicial del objeto
 
 let objetoEnMano = false; // Bandera para saber si el jugador tiene el objeto
+let interfazMostrada = false; // Bandera para saber si el jugador se le muestra la interfaz
+let nombreObjetoEnMano = "";
 
 // Variables para la barra 
 const recargaBarra = document.getElementById("recarga-barra");
@@ -174,7 +176,7 @@ function init() {
     scene.background = new THREE.Color(0xdddddd);
     // Crear la cámara
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(-38.81985205000609, 14, 12.411578414885154);
+    camera.position.set(-38.81985205000609, 14, 25);
     camera.rotation.set(-0.6788501149592728, -1.5389407804029573, -0.6786021307204364)
     // Crear el renderizador
     renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -210,12 +212,36 @@ function onKeyDown(event) {
 
             switch (event.code) {
                 case 'Space':
-                    console.log("espacio precionado");
                     detenerRecarga();
                     break;
                 case 'KeyR':
-                    console.log("R precionada");
                     iniciarRecarga();
+                    break;
+                case 'KeyE':
+                    if (interfazMostrada) {
+                        objetoEnMano = true;
+                        console.log("se agarró objeto");
+                    }
+                    break;
+                case 'KeyQ':
+                    if (objetoEnMano) {
+                        objetoEnMano = false;
+                        console.log("se soltó objeto");
+                        if ((weel_wrench1 != null) && (extinguisher1 != null) && (gasoline1 != null) && (impact_wrench1 != null)) {
+                            weel_wrench1.position.x = weel_wrench1OriginalPosition.x;
+                            weel_wrench1.position.y = weel_wrench1OriginalPosition.y;
+                            weel_wrench1.position.z = weel_wrench1OriginalPosition.z;
+                            extinguisher1.position.x = extinguisher1OriginalPosition.x;
+                            extinguisher1.position.y = extinguisher1OriginalPosition.y;
+                            extinguisher1.position.z = extinguisher1OriginalPosition.z;
+                            gasoline1.position.x = gasoline1OriginalPosition.x;
+                            gasoline1.position.y = gasoline1OriginalPosition.y;
+                            gasoline1.position.z = gasoline1OriginalPosition.z;
+                            impact_wrench1.position.x = impact_wrench1OriginalPosition.x;
+                            impact_wrench1.position.y = impact_wrench1OriginalPosition.y;
+                            impact_wrench1.position.z = impact_wrench1OriginalPosition.z;
+                        }
+                    }
                     break;
                 case 'KeyW':
                     moveForward = true;
@@ -370,6 +396,31 @@ function animate() {
         }
     }
 
+    if (objetoEnMano) {
+        if ((weel_wrench1 != null) && (extinguisher1 != null) && (gasoline1 != null) && (impact_wrench1 != null)) {
+            if (nombreObjetoEnMano === "Llave X") {
+                weel_wrench1.position.x = (controls.object.position.x);
+                weel_wrench1.position.y = (controls.object.position.y) - 4;
+                weel_wrench1.position.z = (controls.object.position.z) + 4;
+            }
+            if (nombreObjetoEnMano === "Extintor") {
+                extinguisher1.position.x = (controls.object.position.x);
+                extinguisher1.position.y = (controls.object.position.y) - 4;
+                extinguisher1.position.z = (controls.object.position.z) + 4;
+            }
+            if (nombreObjetoEnMano === "Gasolina") {
+                gasoline1.position.x = (controls.object.position.x);
+                gasoline1.position.y = (controls.object.position.y) - 4;
+                gasoline1.position.z = (controls.object.position.z) + 4;
+            }
+            if (nombreObjetoEnMano === "Pistola de Impacto") {
+                impact_wrench1.position.x = (controls.object.position.x);
+                impact_wrench1.position.y = (controls.object.position.y) - 4;
+                impact_wrench1.position.z = (controls.object.position.z) + 4;
+            }
+        }
+    }
+
     // Actualizar la caja del jugador
     jugadorBox.setFromCenterAndSize(
         controls.object.position,
@@ -385,6 +436,25 @@ function animate() {
                 controls.object.position.copy(prevPosition);
                 console.log("Colision con: ", objetosConColision[i + 1]);
                 break; // Salir del bucle al detectar colisión
+            }
+        }
+    }
+    // Comprobar colisiones
+    for (let i = 0; i < objetosConInterfaz.length; i++) {
+        const val = typeof objetosConInterfaz[i];
+        if (val === "object") {
+            if (jugadorBox.intersectsBox(objetosConInterfaz[i])) {
+                // Si hay colisión, revertir a la posición anterior
+                controls.object.position.copy(prevPosition);
+                console.log("Colision con interfaz: ", objetosConInterfaz[i + 1]);
+                if (!objetoEnMano) {
+                    mostrarMensaje("Presione la tecla E para agarrar " + objetosConInterfaz[i + 1]);
+                    nombreObjetoEnMano = objetosConInterfaz[i + 1];
+                }
+                break; // Salir del bucle al detectar colisión
+            }
+            else if (interfazMostrada) {
+                ocultarMensaje();
             }
         }
     }
@@ -449,7 +519,7 @@ async function loadLvL1Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
-    weel_wrench1OriginalPosition = await weelG1w4.position.clone();
+    weel_wrench1OriginalPosition = await weel_wrench1.position.clone();
     extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 5, 3.5, 13, .11, .11, .11, 0, 0, 0, false);
     extinguisher1OriginalPosition = await extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
@@ -463,10 +533,10 @@ async function loadLvL1Models() {
     }
 
     if ((weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null)) {
-        const weel_wrench = loadBoxColition(10, 10, 10, weel_wrench1OriginalPosition.x, weel_wrench1OriginalPosition.y, weel_wrench1OriginalPosition.z, showColitions, "Llave X");
-        const extinguisher = loadBoxColition(10, 15, 10, extinguisher1OriginalPosition.x, extinguisher1OriginalPosition.y, extinguisher1OriginalPosition.z, showColitions, "Extintor");
-        const gasoline = loadBoxColition(10, 15, 10, gasoline1OriginalPosition.x, gasoline1OriginalPosition.y, gasoline1OriginalPosition.z, showColitions, "Gasolina");
-        const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto");
+        const weel_wrench = loadBoxColition(10, 10, 10, weel_wrench1OriginalPosition.x, weel_wrench1OriginalPosition.y, weel_wrench1OriginalPosition.z, showColitions, "Llave X", true);
+        const extinguisher = loadBoxColition(10, 15, 10, extinguisher1OriginalPosition.x, extinguisher1OriginalPosition.y, extinguisher1OriginalPosition.z, showColitions, "Extintor", true);
+        const gasoline = loadBoxColition(10, 15, 10, gasoline1OriginalPosition.x, gasoline1OriginalPosition.y, gasoline1OriginalPosition.z, showColitions, "Gasolina", true);
+        const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto", true);
         console.log("Special objects loaded");
     }
     // Crear las paredes con colisión
@@ -490,19 +560,26 @@ async function loadLvL2Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
-    weel_wrench1OriginalPosition = weelG1w4.position.clone();
+    weel_wrench1OriginalPosition = await weel_wrench1.position.clone();
     extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
-    extinguisher1OriginalPosition = extinguisher1.position.clone();
+    extinguisher1OriginalPosition = await extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
-    gasoline1OriginalPosition = gasoline1.position.clone();
+    gasoline1OriginalPosition = await gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
     impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
-    impact_wrench1OriginalPosition = impact_wrench1.position.clone();
+    impact_wrench1OriginalPosition = await impact_wrench1.position.clone();
     paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
-    car1 = await loadGLTFmodel('../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
-    car2 = await loadGLTFmodel('../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
+    car1 = await loadGLTFmodel('../models/props/car5.glb', 41, 5, 77, 18, 18, 18, 0, 0, 0, false);
+    car2 = await loadGLTFmodel('../models/props/car5.glb', -41, 5, 55, 18, 18, 18, 0, 0, 0, false);
     if (modojuego === "jugador") {
         mechanic = await loadGLTFmodel('../models/props/car_mechanic.glb', -40, -1, 40, 7, 7, 7, 0, 0, 0, false);
+    }
+    if ((weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null)) {
+        const weel_wrench = loadBoxColition(10, 10, 10, weel_wrench1OriginalPosition.x, weel_wrench1OriginalPosition.y, weel_wrench1OriginalPosition.z, showColitions, "Llave X", true);
+        const extinguisher = loadBoxColition(10, 15, 10, extinguisher1OriginalPosition.x, extinguisher1OriginalPosition.y, extinguisher1OriginalPosition.z, showColitions, "Extintor", true);
+        const gasoline = loadBoxColition(10, 15, 10, gasoline1OriginalPosition.x, gasoline1OriginalPosition.y, gasoline1OriginalPosition.z, showColitions, "Gasolina", true);
+        const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto", true);
+        console.log("Special objects loaded");
     }
 }
 
@@ -513,19 +590,26 @@ async function loadLvL3Models() {
     weelG1w3 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -16.5, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weelG1w4 = await loadGLTFmodel('../models/props/weel.glb', 43, 10, -25, 8.5, 8.5, 8.5, 0, Math.PI, 0, false);
     weel_wrench1 = await loadGLTFmodel('../models/props/weel_wrench.glb', -18, 9, -40, 18, 18, 18, 0, 0, 0, false);
-    weel_wrench1OriginalPosition = weelG1w4.position.clone();
+    weel_wrench1OriginalPosition = await weel_wrench1.position.clone();
     extinguisher1 = await loadGLTFmodel('../models/props/extinguisher.glb', 36, 3.5, -43.1, .11, .11, .11, 0, 0, 0, false);
-    extinguisher1OriginalPosition = extinguisher1.position.clone();
+    extinguisher1OriginalPosition = await extinguisher1.position.clone();
     gasoline1 = await loadGLTFmodel('../models/props/gasoline.glb', 54, 10.2, 20, 15, 15, 15, 0, 0, 0, false);
-    gasoline1OriginalPosition = gasoline1.position.clone();
+    gasoline1OriginalPosition = await gasoline1.position.clone();
     engine1 = await loadGLTFmodel('../models/props/engine3.glb', 42, 4.6, -6, .4, .4, .4, 0, 0, 0, false);
     impact_wrench1 = await loadGLTFmodel('../models/props/impact_wrench.glb', -53, 7.6, 11, 10, 10, 10, 0, 0, 0, false);
-    impact_wrench1OriginalPosition = impact_wrench1.position.clone();
+    impact_wrench1OriginalPosition = await impact_wrench1.position.clone();
     paper_tablet1 = await loadGLTFmodel('../models/props/paper_tablet.glb', 14.6, 9.01, -38.7, 10, 10, 10, Math.PI / 2 * -1, 0, 0, false);
     car1 = await loadGLTFmodel('../models/props/car5.glb', 0, 5, 0, 18, 18, 18, 0, 0, 0, false);
     car2 = await loadGLTFmodel('../models/props/car5.glb', 30, 5, 0, 18, 18, 18, 0, 0, 0, false);
     if (modojuego === "jugador") {
         mechanic = await loadGLTFmodel('../models/props/car_mechanic.glb', -40, 1, 40, 7, 7, 7, 0, 0, 0, false);
+    }
+    if ((weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null) && (weel_wrench1OriginalPosition != null)) {
+        const weel_wrench = loadBoxColition(10, 10, 10, weel_wrench1OriginalPosition.x, weel_wrench1OriginalPosition.y, weel_wrench1OriginalPosition.z, showColitions, "Llave X", true);
+        const extinguisher = loadBoxColition(10, 15, 10, extinguisher1OriginalPosition.x, extinguisher1OriginalPosition.y, extinguisher1OriginalPosition.z, showColitions, "Extintor", true);
+        const gasoline = loadBoxColition(10, 15, 10, gasoline1OriginalPosition.x, gasoline1OriginalPosition.y, gasoline1OriginalPosition.z, showColitions, "Gasolina", true);
+        const impact_wrench = loadBoxColition(10, 15, 10, impact_wrench1OriginalPosition.x, impact_wrench1OriginalPosition.y, impact_wrench1OriginalPosition.z, showColitions, "Pistola de Impacto", true);
+        console.log("Special objects loaded");
     }
 }
 
@@ -640,7 +724,7 @@ function loadScene() {
     }
 }
 
-function loadBoxColition(x, y, z, posx, posy, posz, visible = false, name) {
+function loadBoxColition(x, y, z, posx, posy, posz, visible = false, name, withInterface = false) {
     // Material configurable
     const material = visible
         ? new THREE.MeshBasicMaterial({
@@ -658,8 +742,13 @@ function loadBoxColition(x, y, z, posx, posy, posz, visible = false, name) {
     // Crear la caja de colisión
     const box = new THREE.Box3().setFromObject(mesh);
 
-    // Agregar a los objetos con colisión
-    objetosConColision.push(box, name);
+    if (withInterface) {
+        // Agregar a los objetos con interfaz
+        objetosConInterfaz.push(box, name);
+    } else {
+        // Agregar a los objetos con colisión
+        objetosConColision.push(box, name);
+    }
 
     // Devolver el Mesh y la Box3
     return { mesh, box };
@@ -855,4 +944,18 @@ function finalizarJuego() {
     // Mostrar la puntuación final
     const finalPuntuacion = document.getElementById("final-puntuacion");
     finalPuntuacion.textContent = `Tu puntuación: ${puntuacionTotal}`;
+}
+
+function mostrarMensaje(texto) {
+    const mensaje = document.getElementById("mensaje-interaccion");
+    const mensajeTexto = document.getElementById("mensaje-texto");
+    mensajeTexto.textContent = texto;
+    mensaje.style.display = "block";
+    interfazMostrada = true;
+}
+
+function ocultarMensaje() {
+    const mensaje = document.getElementById("mensaje-interaccion");
+    mensaje.style.display = "none";
+    interfazMostrada = false;
 }
